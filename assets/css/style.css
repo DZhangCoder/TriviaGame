@@ -1,0 +1,42 @@
+body{
+    background-image: url("../images/bananas.png"); 
+    font-family: 'Ubuntu', sans-serif;
+    margin: 20px; 
+}
+
+h1{
+    border: 5px white dashed; 
+    width: 300px; 
+    text-align: center; 
+    padding: 1em; 
+    color: #DF01A5; 
+}
+
+#question{
+    font-size: 20px; 
+    padding: 5px; 
+}
+
+.options:hover{
+    background-color:#F5F6CE;
+}
+.options{
+    padding: 5px; 
+    width: 150px; 
+}
+
+#result{
+    color: #DF01A5; 
+}
+
+#timer{
+    padding: 5px; 
+    border: 2px white solid; 
+    background: yellow; 
+    width: 150px; 
+    text-align: center; 
+    display: none; 
+}
+#changeContent{
+    display:none; 
+}

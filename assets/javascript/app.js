@@ -23,9 +23,9 @@ var questionSet = [
         answer1: "Moana",
         answer2: "The Lion King",
         answer3: "Black Panther",
-        answer4: "Charlotte's Web",
-        correctAnswer: "Charlotte's Web",
-        image: "<img src = 'assets/images/Charlotte's Web.gif' alt = 'Charlotte's Web'>",
+        answer4: "Spirited Away",
+        correctAnswer: "Spirited Away",
+        image: "<img src = 'assets/images/Spirited Away.gif' alt = 'Spirited Away'>",
     },
     {
         question: "Which actress has won the most Oscars?",
@@ -95,85 +95,109 @@ var questionSet = [
 // global variables of counters 
 var wins = 0;
 var losses = 0;
-var TIME_OUT = 5;
+var unanswered = 0;
+var TIME_OUT = 10;
 var timeCount = TIME_OUT;
 var index = 0;
 var pause = false;
+var interval;
+var BREAK = 2000;
 
 //Write a function that displays questions and options 
-var displayQuestion = function () {
-    $("#result").hide(); 
-    $("#gif").hide(); 
-    // write question into html
-    $("#question").text(questionSet[index].question);
+var displayQuestion = function (j) {
+    $("#result").hide();
+    $("#gif").hide();
+    if (j < questionSet.length && j >=0) {
+        // write question into html
+        $("#question").text(questionSet[j].question);
 
-    // write answers options into html 
-    $("#answerOption1").text(questionSet[index].answer1);
-    $("#answerOption2").text(questionSet[index].answer2);
-    $("#answerOption3").text(questionSet[index].answer3);
-    $("#answerOption4").text(questionSet[index].answer4);
+        // write answers options into html 
+        $("#answerOption1").text(questionSet[j].answer1);
+        $("#answerOption2").text(questionSet[j].answer2);
+        $("#answerOption3").text(questionSet[j].answer3);
+        $("#answerOption4").text(questionSet[j].answer4);
 
-    $("#changeContent").show();
+        $("#changeContent").show();
+    }
     pause = false;
 }
 
+
 // create a counting time function 
 var counting = function () {
-    $("#timer").html(timeCount);
-    
-    var interval = setInterval(function () {
+    $("#timer").html("Remaining Time: " + timeCount);
+    interval = setInterval(function () {
         timeCount--;
         if (pause) {
             timeCount++;
         }
-        $("#timer").html(timeCount);
+        $("#timer").html("Remaining Time: " + timeCount);
         // running out of time 
         if (timeCount === 0) {
             $("#changeContent").hide();
-            $("#result").show(); 
-            $("#gif").show(); 
+            $("#result").show();
+            $("#gif").show();
             $("#result").text("Out of Time! The correct answer was: " + questionSet[index].correctAnswer);
             $("#gif").html(questionSet[index].image);
             pause = true;
-            losses++;
+            unanswered++;
             index++;
-            setTimeout(displayQuestion, 4000);
+            setTimeout(displayQuestion, BREAK, index);
             timeCount = TIME_OUT;
-            if (index > questionSet.length) {
+            if (index >= questionSet.length) {
                 clearInterval(interval)
+                final();
             }
         }
 
     }, 1000);
 }
+// Write a function that shows the result of wins, losses, and unanswered when reaching the last question 
+var final = function () {
+    $("#changeContent").hide();
+    $("#result").hide();
+    $("#gif").hide();
+    $("#timer").hide();
+    $("#final").text("Here is how you did: ");
+    $("#wins").text("Correct answers: " + wins);
+    $("#losses").text("Incorrect answers: " + losses);
+    $("#unanswered").text("Unanswered: " + unanswered);
+}
 
 // when click the answer option 
 $(".options").on("click", function () {
     console.log($(this)[0].innerText);
-    $("#timer").html(timeCount);
+    if (index < questionSet.length) {
+        $("#changeContent").hide();
+        $("#result").show();
+        $("#gif").show();
+        $("#gif").html(questionSet[index].image);
+        pause = true;
 
-    // correct 
-    if ($(this)[0].innerText ===  questionSet[index].correctAnswer) {
-        $("#changeContent").html("Correct!");
-        $("#changeContent").append("<div>" + questionSet[index].image  + "</div>");
-        wins++;
+        $("#timer").html("Remaining Time: " + timeCount);
+        // correct 
+        if ($(this)[0].innerText === questionSet[index].correctAnswer) {
+            $("#result").text("Correct!");
+            wins++;
+        }
+        // wrong
+        else {
+            $("#result").text("Nope! The correct answer was: " + questionSet[index].correctAnswer);
+            losses++;
+        }
         index++;
+        if (index === questionSet.length) {
+            clearInterval(interval)
+            final();
+        }
+        setTimeout(displayQuestion, BREAK, index);
+        timeCount = TIME_OUT;
     }
-    // wrong
-    else {
-        $("#changeContent").html("Nope! The correct answer was: " +  questionSet[index].correctAnswer);
-        $("#changeContent").append("<div>" + questionSet[index].image + "</div>");
-        losses++;
-        index++;
-    }
-
 });
-
-
-
 
 // When click the start button, the page's content would change into a question and its answer set. 
 $("#start").on("click", function () {
+    $("#timer").show();
     displayQuestion(0);
     counting();
 });
